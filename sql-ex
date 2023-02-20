@@ -1,0 +1,37 @@
+Схема БД состоит из четырех таблиц:
+Product(maker, model, type)
+PC(code, model, speed, ram, hd, cd, price)
+Laptop(code, model, speed, ram, hd, price, screen)
+Printer(code, model, color, type, price)
+Таблица Product представляет производителя (maker), номер модели (model) и тип ('PC' - ПК, 'Laptop' - ПК-блокнот или 'Printer' - принтер). Предполагается, что номера моделей в таблице Product уникальны для всех производителей и типов продуктов. В таблице PC для каждого ПК, однозначно определяемого уникальным кодом – code, указаны модель – model (внешний ключ к таблице Product), скорость - speed (процессора в мегагерцах), объем памяти - ram (в мегабайтах), размер диска - hd (в гигабайтах), скорость считывающего устройства - cd (например, '4x') и цена - price (в долларах). Таблица Laptop аналогична таблице РС за исключением того, что вместо скорости CD содержит размер экрана -screen (в дюймах). В таблице Printer для каждой модели принтера указывается, является ли он цветным - color ('y', если цветной), тип принтера - type (лазерный – 'Laser', струйный – 'Jet' или матричный – 'Matrix') и цена - price.
+
+
+1) Для каждого производителя, выпускающего ПК-блокноты c объёмом жесткого диска не менее 10 Гбайт, найти скорости таких ПК-блокнотов. Вывод: производитель, скорость.
+
+SELECT DISTINCT Product.maker, Laptop.speed from Product INNER JOIN laptop ON 
+Product.model = laptop.model where Product.type = 'Laptop' and laptop.hd >= 10
+
+2) Найдите производителя, выпускающего ПК, но не ПК-блокноты.
+Select Distinct maker FROM Product where type = 'PC'
+ AND 
+      maker NOT IN (SELECT maker 
+                    FROM Product 
+                    WHERE type = 'Laptop'
+                    )
+ 3) Найдите производителей ПК с процессором не менее 450 Мгц. Вывести: Maker
+SELECt DISTINCT Product.maker From Product INNER JOIN PC on Product.model = PC.model  where PC.speed >= 450
+
+4) Найдите модели принтеров, имеющих самую высокую цену. Вывести: model, price
+SELECT Model, price From Printer where price = (Select max(price) from Printer)
+
+5)Найдите среднюю скорость ПК.
+SELECT AVG(speed) From PC
+
+6)Найдите среднюю скорость ПК-блокнотов, цена которых превышает 1000 дол.
+SELECT AVG(speed) As AVG_Speed FROM Laptop where price > 1000
+
+7)Найдите среднюю скорость ПК, выпущенных производителем A.
+Select AVG(speed) AS AVG_Speed from PC INNER JOIN Product ON PC.model = Product.model where Product.maker = 'A'
+
+
+                    
